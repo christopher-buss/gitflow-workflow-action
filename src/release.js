@@ -64,8 +64,7 @@ export async function createReleasePR() {
 
   console.log("7");
   const { md, config } = await generate({
-    token: process.env.GITHUB_TOKEN,
-    cwd: process.cwd(),
+    dry: true,
   });
   console.log("8");
 
