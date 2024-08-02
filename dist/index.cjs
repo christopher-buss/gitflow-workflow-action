@@ -392,6 +392,7 @@ async function createReleasePR() {
 
   const { md, config } = await changelogithub.generate({
     dry: true,
+    token: process.env.GITHUB_TOKEN,
   });
 
   const releasePrBody = `${md}

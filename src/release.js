@@ -52,6 +52,7 @@ export async function createReleasePR() {
 
   const { md, config } = await generate({
     dry: true,
+    token: process.env.GITHUB_TOKEN,
   });
 
   const releasePrBody = `${md}
