@@ -26,7 +26,11 @@ export async function createReleasePR() {
     .getLatestRelease(Config.repo)
     .catch(() => ({ data: null }));
 
+  console.log("1");
+
   const latest_release_tag_name = latestRelease?.tag_name;
+
+  console.log("2");
 
   /**
    * @type {string}
@@ -34,12 +38,15 @@ export async function createReleasePR() {
   let version;
   if (Config.version) {
     version = Config.version;
+    console.log("3");
   } else if (Config.versionIncrement) {
+    console.log("4");
     const increasedVersion = semverInc(
       latest_release_tag_name || "0.0.0",
       Config.versionIncrement,
       { loose: true },
     );
+    console.log("5");
     if (!increasedVersion) {
       throw new Error(
         `create_release: Could not increment version ${latest_release_tag_name} with ${Config.versionIncrement}`,
@@ -47,12 +54,15 @@ export async function createReleasePR() {
     }
     version = increasedVersion;
   } else {
+    console.log("6");
     version = developBranchSha;
   }
 
+  console.log("7");
   const { md, config } = await generate({
     token: process.env.GITHUB_TOKEN,
   });
+  console.log("8");
 
   const releasePrBody = `${md}
     
@@ -60,6 +70,8 @@ export async function createReleasePR() {
 
 ${Config.releaseSummary}
   `;
+
+  console.log(releasePrBody);
 
   const releaseBranch = `${Config.releaseBranchPrefix}${version}`;
   let pull_number;
