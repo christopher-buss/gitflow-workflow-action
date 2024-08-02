@@ -391,7 +391,6 @@ async function createReleasePR() {
   }
 
   const { md, config } = await changelogithub.generate({
-    token: process.env.GITHUB_TOKEN,
     dry: true,
   });
 
