@@ -4,7 +4,6 @@
   "version": "0.2.3",
   "description": "A Github Action to automate merge to production PR",
   "main": "dist/index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .js src"

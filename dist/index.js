@@ -1,58 +1,36 @@
-'use strict';
-
-var core = require('@actions/core');
-var github = require('@actions/github');
-var assert = require('assert');
-var webApi = require('@slack/web-api');
-var slackifyMarkdown = require('slackify-markdown');
-var semverInc = require('semver/functions/inc');
-var changelogithub = require('changelogithub');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    Object.keys(e).forEach(function (k) {
-      if (k !== 'default') {
-        var d = Object.getOwnPropertyDescriptor(e, k);
-        Object.defineProperty(n, k, d.get ? d : {
-          enumerable: true,
-          get: function () { return e[k]; }
-        });
-      }
-    });
-  }
-  n.default = e;
-  return Object.freeze(n);
-}
-
-var core__namespace = /*#__PURE__*/_interopNamespaceDefault(core);
-var github__namespace = /*#__PURE__*/_interopNamespaceDefault(github);
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import assert from 'assert';
+import { WebClient } from '@slack/web-api';
+import slackifyMarkdown from 'slackify-markdown';
+import semverInc from 'semver/functions/inc';
+import { generate } from 'changelogithub';
 
 const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) throw new Error(`process.env.GITHUB_TOKEN is not defined`);
 
-const octokit = github__namespace.getOctokit(githubToken);
+const octokit = github.getOctokit(githubToken);
 
 const Config = {
   developBranch:
-    core__namespace.getInput("develop_branch") || process.env.DEVELOP_BRANCH || "",
-  prodBranch: core__namespace.getInput("main_branch") || process.env.MAIN_BRANCH || "",
+    core.getInput("develop_branch") || process.env.DEVELOP_BRANCH || "",
+  prodBranch: core.getInput("main_branch") || process.env.MAIN_BRANCH || "",
   mergeBackFromProd:
-    (core__namespace.getInput("merge_back_from_main") ||
+    (core.getInput("merge_back_from_main") ||
       process.env.MERGE_BACK_FROM_MAIN) == "true",
   repo: {
-    owner: github__namespace.context.repo.owner,
-    repo: github__namespace.context.repo.repo,
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
   },
-  version: core__namespace.getInput("version") || process.env.VERSION || "",
+  version: core.getInput("version") || process.env.VERSION || "",
   /**
    * @type {import("semver").ReleaseType}
    */
   versionIncrement:
-    core__namespace.getInput("version_increment") || process.env.VERSION_INCREMENT || "",
-  isDryRun: (core__namespace.getInput("dry_run") || process.env.DRY_RUN) == "true",
+    core.getInput("version_increment") || process.env.VERSION_INCREMENT || "",
+  isDryRun: (core.getInput("dry_run") || process.env.DRY_RUN) == "true",
   releaseSummary:
-    core__namespace.getInput("release_summary") || process.env.RELEASE_SUMMARY || "",
+    core.getInput("release_summary") || process.env.RELEASE_SUMMARY || "",
   releaseBranchPrefix: "release/",
   hotfixBranchPrefix: "hotfix/",
 };
@@ -192,7 +170,7 @@ async function sendToSlack(slackInput, release) {
   const slackToken = process.env.SLACK_TOKEN;
   if (!slackToken) throw new Error("process.env.SLACK_TOKEN is not defined");
 
-  const slackWebClient = new webApi.WebClient(slackToken);
+  const slackWebClient = new WebClient(slackToken);
 
   let releaseBody = release.body || "";
 
@@ -237,7 +215,7 @@ async function executeOnRelease() {
     };
   }
 
-  if (!github__namespace.context.payload.pull_request?.merged) {
+  if (!github.context.payload.pull_request?.merged) {
     console.log(`on-release: pull request is not merged. Exiting...`);
     return {
       type: "none",
@@ -248,7 +226,7 @@ async function executeOnRelease() {
    * Precheck
    * Check if the pull request has a release label, targeting main branch, and if it was merged
    */
-  const pullRequestNumber = github__namespace.context.payload.pull_request?.number;
+  const pullRequestNumber = github.context.payload.pull_request?.number;
   assert(
     pullRequestNumber,
     `github.context.payload.pull_request?.number is not defined`,
@@ -320,7 +298,7 @@ async function executeOnRelease() {
   console.log(`on-release: success`);
 
   console.log(`post-release: process release ${release.name}`);
-  const slackInput = core__namespace.getInput("slack") || process.env.SLACK_OPTIONS;
+  const slackInput = core.getInput("slack") || process.env.SLACK_OPTIONS;
   if (slackInput) {
     /**
      * Slack integration
@@ -384,7 +362,7 @@ async function createReleasePR() {
     version = developBranchSha;
   }
 
-  const { md, config } = await changelogithub.generate({
+  const { md, config } = await generate({
     token: process.env.GITHUB_TOKEN,
   });
 
@@ -463,14 +441,14 @@ const start = async () => {
 
   let res;
   if (
-    github__namespace.context.eventName === "pull_request" &&
-    github__namespace.context.payload.action === "closed"
+    github.context.eventName === "pull_request" &&
+    github.context.payload.action === "closed"
   ) {
     console.log(
       `gitflow-workflow-action: Pull request closed. Running executeOnRelease...`,
     );
     res = await executeOnRelease();
-  } else if (github__namespace.context.eventName === "workflow_dispatch") {
+  } else if (github.context.eventName === "workflow_dispatch") {
     console.log(
       `gitflow-workflow-action: Workflow dispatched. Running createReleasePR...`,
     );
@@ -485,7 +463,7 @@ const start = async () => {
       `gitflow-workflow-action: Setting output: ${JSON.stringify(res)}`,
     );
     for (const key of Object.keys(res)) {
-      core__namespace.setOutput(key, res[key]);
+      core.setOutput(key, res[key]);
     }
   }
 };
@@ -495,6 +473,6 @@ start()
     process.exitCode = 0;
   })
   .catch((err) => {
-    core__namespace.setFailed(err.message);
+    core.setFailed(err.message);
     process.exitCode = 1;
   });
