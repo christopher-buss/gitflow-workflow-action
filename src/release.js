@@ -65,7 +65,7 @@ export async function createReleasePR() {
     token: process.env.GITHUB_TOKEN,
     to: developBranchSha,
     from: latest_release_tag_name || "0.0.0",
-    repo: Config.repo,
+    repo: Config.repo.repo,
   });
   console.log("8");
 
