@@ -33,5 +33,5 @@ inputs:
     default: ""
 
 runs:
-  using: "node16"
-  main: "dist/index.cjs"
+  using: "node20"
+  main: "dist/index.js"
