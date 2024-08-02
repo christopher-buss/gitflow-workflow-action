@@ -65,9 +65,7 @@ export async function createReleasePR() {
   console.log("7");
   const { md, config } = await generate({
     token: process.env.GITHUB_TOKEN,
-    to: developBranchSha,
-    from: latest_release_tag_name || "0.0.0",
-    repo: Config.repo.repo,
+    cwd: process.cwd(),
   });
   console.log("8");
 
