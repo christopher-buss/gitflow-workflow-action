@@ -63,6 +63,7 @@ export async function createReleasePR() {
   console.log("7");
   const { md, config } = await generate({
     token: process.env.GITHUB_TOKEN,
+    from: latest_release_tag_name,
   });
   console.log("8");
 
