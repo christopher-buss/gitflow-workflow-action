@@ -400,6 +400,8 @@ async function createReleasePR() {
     version = developBranchSha;
   }
 
+  console.log(Config.repo.repo);
+
   console.log("7");
   const { md, config } = await changelogithub.generate({
     token: process.env.GITHUB_TOKEN,
