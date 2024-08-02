@@ -3,7 +3,7 @@
   "name": "gitflow-workflow-action",
   "version": "0.4.0",
   "description": "A Github Action to automate merge to production PR",
-  "main": "dist/index.mjs",
+  "main": "dist/index.cjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
