@@ -1,7 +1,7 @@
-// @ts-check
 import semverInc from "semver/functions/inc";
 import { Config, octokit } from "./shared.js";
 import { createExplainComment } from "./utils.js";
+import { generate } from "changelogithub";
 
 /**
  * @returns {Promise<import("./types.js").Result>}
@@ -50,14 +50,11 @@ export async function createReleasePR() {
     version = developBranchSha;
   }
 
-  const { data: releaseNotes } = await octokit.rest.repos.generateReleaseNotes({
-    ...Config.repo,
-    tag_name: version,
-    target_commitish: Config.developBranch,
-    previous_tag_name: latest_release_tag_name,
+  const { md, config } = await generate({
+    token: process.env.GITHUB_TOKEN,
   });
 
-  const releasePrBody = `${releaseNotes.body}
+  const releasePrBody = `${md}
     
 ## Release summary
 
@@ -81,7 +78,7 @@ ${Config.releaseSummary}
 
     const { data: pullRequest } = await octokit.rest.pulls.create({
       ...Config.repo,
-      title: `Release ${releaseNotes.name || version}`,
+      title: `Release ${config.name || version}`,
       body: releasePrBody,
       head: releaseBranch,
       base: Config.prodBranch,
@@ -108,8 +105,8 @@ ${Config.releaseSummary}
   }
 
   // Parse the PR body for PR numbers
-  let mergedPrNumbers = (releaseNotes.body.match(/pull\/\d+/g) || []).map(
-    (prNumber) => Number(prNumber.replace("pull/", "")),
+  let mergedPrNumbers = (md.match(/pull\/\d+/g) || []).map((prNumber) =>
+    Number(prNumber.replace("pull/", "")),
   );
   // remove duplicates due to the "New contributors" section
   mergedPrNumbers = Array.from(new Set(mergedPrNumbers)).sort();
