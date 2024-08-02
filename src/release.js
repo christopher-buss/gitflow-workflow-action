@@ -20,6 +20,8 @@ export async function createReleasePR() {
     `create_release: Generating release notes for ${developBranchSha}`,
   );
 
+  console.log("0");
+
   // developBranch and mainBranch are almost identical
   // so we can use developBranch for ahead-of-time release note
   const { data: latestRelease } = await octokit.rest.repos
