@@ -360,19 +360,13 @@ async function createReleasePR() {
     `create_release: Generating release notes for ${developBranchSha}`,
   );
 
-  console.log("0");
-
   // developBranch and mainBranch are almost identical
   // so we can use developBranch for ahead-of-time release note
   const { data: latestRelease } = await octokit.rest.repos
     .getLatestRelease(Config.repo)
     .catch(() => ({ data: null }));
 
-  console.log("1");
-
   const latest_release_tag_name = latestRelease?.tag_name;
-
-  console.log("2");
 
   /**
    * @type {string}
@@ -380,15 +374,12 @@ async function createReleasePR() {
   let version;
   if (Config.version) {
     version = Config.version;
-    console.log("3");
   } else if (Config.versionIncrement) {
-    console.log("4");
     const increasedVersion = semverInc__default.default(
       latest_release_tag_name || "0.0.0",
       Config.versionIncrement,
       { loose: true },
     );
-    console.log("5");
     if (!increasedVersion) {
       throw new Error(
         `create_release: Could not increment version ${latest_release_tag_name} with ${Config.versionIncrement}`,
@@ -396,17 +387,12 @@ async function createReleasePR() {
     }
     version = increasedVersion;
   } else {
-    console.log("6");
     version = developBranchSha;
   }
 
-  console.log(Config.repo.repo);
-
-  console.log("7");
   const { md, config } = await changelogithub.generate({
     dry: true,
   });
-  console.log("8");
 
   const releasePrBody = `${md}
     
