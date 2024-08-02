@@ -404,7 +404,7 @@ async function createReleasePR() {
   const { md, config } = await changelogithub.generate({
     token: process.env.GITHUB_TOKEN,
     to: developBranchSha,
-    from: latest_release_tag_name,
+    from: latest_release_tag_name || "0.0.0",
     repo: Config.repo,
   });
   console.log("8");
