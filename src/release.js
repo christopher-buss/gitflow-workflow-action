@@ -1,4 +1,4 @@
-import semverInc from "semver/functions/inc";
+import semverInc from "semver/functions/inc.js";
 import { Config, octokit } from "./shared.js";
 import { createExplainComment } from "./utils.js";
 import { generate } from "changelogithub";

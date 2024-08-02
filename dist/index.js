@@ -3,7 +3,7 @@ import * as github from '@actions/github';
 import assert from 'assert';
 import { WebClient } from '@slack/web-api';
 import slackifyMarkdown from 'slackify-markdown';
-import semverInc from 'semver/functions/inc';
+import semverInc from 'semver/functions/inc.js';
 import { generate } from 'changelogithub';
 
 const githubToken = process.env.GITHUB_TOKEN;
